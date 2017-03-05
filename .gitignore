@@ -1,0 +1,9 @@
+data
+.ipynb_checkpoints
+*.h5
+models
+*.swp
+*.p
+old notebook/
+.ipynb_checkpoints/
+tf_summary/
