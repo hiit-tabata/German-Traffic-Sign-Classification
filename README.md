@@ -25,6 +25,8 @@ The goals / steps of this project are the following:
 [failGraph]: ./img/failGraph.png "failGraph"
 [failResult]: ./img/failResult.png "failResult"
 [finalGraph]: ./img/finalGraph.png "finalGraph"
+[kerasGraph]: ./img/kerasGraph.png "kerasGraph"
+[accKeras]: ./img/accKeras.png "accKeras"
 
 ### Data Set Summary & Exploration
 I use pickle to import the data into ipython notebook. Then I use numpy to calculate the statistics of the data set.
@@ -162,49 +164,52 @@ I use a model simliar to AlexNet with smaller number kernel used in conv. layer 
 
 
 ```python
-x = tf.placeholder('float', [None, IMG_SIZE, IMG_SIZE, NUM_CHANNELS])
-y = tf.placeholder('float', [None, NUM_CLASSES])
 
-# Placeholder for dropout keep probability
-keep_prob = tf.placeholder(tf.float32)
+      ## ini network
+      x, y, keep_prob, logits, optimizer, predictions, accuracy = nn()
 
-# Use batch normalization for all convolution layers
-with slim.arg_scope([slim.conv2d], normalizer_fn=slim.batch_norm):
+      # Dro save model
+      saver = tf.train.Saver()
 
-    net = slim.conv2d(x, 16, [3, 3], scope='conv1')  
-    net = slim.max_pool2d(net, [3, 3], 1, padding='SAME', scope='pool1')
+      # TensorBoard record
+      train_writer = tf.summary.FileWriter("logs/train", sess.graph)  
 
-    net = slim.conv2d(net, 64, [5, 5], 3, padding='VALID', scope='conv2')  
-    net = slim.max_pool2d(net, [3, 3], 1, scope='pool2')  
+      # Variable initialization
+      init = tf.global_variables_initializer()
+      sess.run(init)
 
-    net = slim.conv2d(net, 128, [3, 3], scope='conv3')  
+      # save the acc history
+      history = []
 
-    net = slim.conv2d(net, 128, [3, 3], scope='conv4')  
 
-    net = slim.conv2d(net, 64, [3, 3], scope='conv5')  
-    net = slim.max_pool2d(net, [3, 3], 1, scope='pool3')  
+      # Record time elapsed for performance check
+      last_time = time.time()
+      train_start_time = time.time()
 
-    # Final fully-connected layers
-    net = tf.contrib.layers.flatten(net)
-    net = slim.fully_connected(net, 1024, scope='fc4')
-    net = tf.nn.dropout(net, keep_prob)
-    net = slim.fully_connected(net, 1024, scope='fc5')
-    net = tf.nn.dropout(net, keep_prob)
-    net = slim.fully_connected(net, NUM_CLASSES, scope='fc6')
+      # Run NB_EPOCH epochs of training
+      for epoch in range(NB_EPOCH):
+          generator = batchGenerator(x_train_processed, y_train_processed)
+          while generator.hasNext():
+              x_, y_ = generator.next_batch(BATCH_SIZE)
+              sess.run(optimizer, feed_dict={x: x_, y: y_, keep_prob: DROPOUT_PROB})
 
-# Final output (logits)
-logits = net
+          # Calculate Accuracy Training set
+          train_acc = calculate_accuracy(32, accuracy, x, y, x_train_processed, y_train_processed, keep_prob, sess)
 
-# Loss (data loss and regularization loss) and optimizer
-loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = logits, labels = y))
-optimizer = OPT.minimize(loss)
+          # Calculate Accuracy Validation set
+          valid_acc = calculate_accuracy(32, accuracy, x, y, x_valid_processed, y_valid_processed, keep_prob, sess)
 
-# Prediction (used during inference)
-predictions = tf.argmax(logits, 1)
+          # Record and report train/validation/test accuracies for this epoch
+          history.append((train_acc, valid_acc))
 
-# Accuracy metric calculation
-correct_prediction = tf.equal(predictions, tf.argmax(y, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+          # Print log
+          if (epoch+1) % 10 == 0 or epoch == 0 or (epoch+1) == NB_EPOCH:
+              print('Epoch %d -- Train acc.: %.4f, valid. acc.: %.4f, used: %.2f sec' %\
+                  (epoch+1, train_acc, valid_acc, time.time() - last_time))
+              last_time = time.time()
+
+      total_time = time.time() - train_start_time
+      print('Training time: %.2f sec (%.2f min)' % (total_time, total_time/60))
 ```
 
 
@@ -282,10 +287,17 @@ ps no normalization applied
 
 The model need longer time to train to 0.8 acc., which can consider a inefficient model design. The major mistake in this model wasn't apply batch normalization in the training, which make it need longer to train and do not fully use the nonlinearity of relu.
 
+I tried using keras to train the model also.
+I use a smaller model, it gave a pretty good result without data augumentation, ~93%.
+predict test data  0.933096
+[code](detectSign.py)
+![kerasGraph][kerasGraph]
+![accKeras][accKeras]
+
 
 ### Test a Model on New Images
 
-#### 1.  Six new German traffic signs
+#### 1. Six new German traffic signs
 
 Here are six German traffic signs that I found on the web:
 ![newImgs][newImgs]

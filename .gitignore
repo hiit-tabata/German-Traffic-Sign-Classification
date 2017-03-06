@@ -7,3 +7,5 @@ models
 old notebook/
 .ipynb_checkpoints/
 tf_summary/
+~history.p
+~history.p
