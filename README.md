@@ -105,6 +105,8 @@ I have few ways to Preprocessed the data set:
 2. Normalize the image to range(0, 1)
 3. Augmente the images
 
+The advantage of normalizing image is to make gradient descent converge faster.
+
 Gray scale image can reduce the image size, which helps to train the model easier. Image normalized in to range (0, 1) can help model to learn data set. Since the size of dataset not large enough, augmentation on image is necessary.
 
 The Pre-processing params.
@@ -161,11 +163,7 @@ since the data set provided a validation data set, thus i do not use data set sp
 * Number of validation examples = 4410
 * Number of testing examples = 12630
 
-Here is an example of an original image and an augmented image:
 
-![alt text][image3]
-
-The difference between the original data set and the augmented data set is the following ...
 
 
 #### 3. Model
@@ -229,6 +227,8 @@ I use a model simliar to AlexNet with smaller number kernel used in conv. layer 
 
 I create a class batchGenerator to manage batch train, which perform batch mangement, it helps the train fucntion cleaner. It also have shuffle function, which randomize the datasets.
 
+
+
 ##### hyperparameters
 * learning rate 0.005
 * drop out rate 0.5
@@ -236,6 +236,8 @@ I create a class batchGenerator to manage batch train, which perform batch mange
 * total epochs
 * batch size 128
 * optimizer: gradient descent algorithm
+* Early stop patience 3 # how many epoch will watch for early stop
+* Early stop min_delta 0.02 # min. threshold delta change in accuracy
 
 ```python
 class batchGenerator:
@@ -278,11 +280,13 @@ class batchGenerator:
 The chart above is the accuracy of training and validation during 40 epoch training.
 
 The final model accuracy were:
-* training set accuracy of 0.9993
-* validation set accuracy of 0.9782
-* test set accuracy of 0.9561
+* training set accuracy of 0.9769
+* validation set accuracy of 0.9395
+* test set accuracy of 0.9375
 
 The code for calculating the accuracy of the model is located in the the [Ipython notebook](https://github.com/hmtai6/German-Traffic-Sign-Classification/blob/master/Traffic_Sign_Classifier-tfSlim%20.ipynb).
+
+---------
 
 I have try different model.
 
@@ -298,6 +302,8 @@ ps no normalization applied
 ![failResult][failResult]
 
 The model need longer time to train to 0.8 acc., which can consider a inefficient model design. The major mistake in this model wasn't apply batch normalization in the training, which make it need longer to train and do not fully use the nonlinearity of relu.
+
+--------
 
 I tried using keras to train the model also.
 I use a smaller model, it gave a pretty good result without data augumentation, ~93%.
@@ -329,10 +335,24 @@ Here are the results of the prediction:
 | Yield					| Yield											|
 | Speed limit (30km/h)  		| Speed limit (30km/h)		 				|
 | Road work		| Road work      							|
-|General caution	| General caution     							|
+|General caution	| Bicycles crossing     							|
 
 
-The model was able to correctly guess 6 of the 6 traffic signs, which gives an accuracy of 100%.
+The model was able to correctly guess 5 of the 6 traffic signs, which gives an accuracy of 83.33 %.
 
 #### Vislualization softmax predictions
 !["newImgResult"][newImgResult]
+
+For sample image -General caution, it seems predict a completly wrong class.
+
+| class			         | softmax |
+|:---------------------:|:----------------------------:|
+|Bicycles crossing 	|     	84.8%						|
+|Bumpy Road 	|     	13.9%						|
+|Children crossing 	|     	0.3%						|
+|General caution 	|     	0.3%						|
+|speed limit(30rm/h) 	|     	0.3%						|
+
+It seems model do not handle well when image not fully fit with sign. In General caution sample image have a little sign below General caution, it might the reason make model misclassifying it.
+
+For the other sample images, it seems model predit well, all of them have a dominant softmax value over otehr classes.
