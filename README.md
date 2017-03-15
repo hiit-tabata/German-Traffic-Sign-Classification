@@ -28,7 +28,14 @@ The goals / steps of this project are the following:
 [kerasGraph]: ./img/kerasGraph.png "kerasGraph"
 [accKeras]: ./img/accKeras.png "accKeras"
 
+## Rubric Points
+###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
+
+---
+###Writeup / README
+
 ### Data Set Summary & Exploration
+#### 1. Provide a basic summary of the data set and identify where in your code the summary was done. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
 I use pickle to import the data into ipython notebook. Then I use numpy to calculate the statistics of the data set.
 
 ```python
@@ -57,6 +64,7 @@ I use pickle to import the data into ipython notebook. Then I use numpy to calcu
 
 
 #### 2. Data set exploratoration and visualization
+##### Include an exploratory visualization of the dataset and identify where the code is in your code file.
 The chart below is the label distribution, which can show the label distribution are not even, some class have more data then others.
 ![label distribution][labelDistri]
 
@@ -89,6 +97,9 @@ plt.tight_layout()
 ### Design and Test a Model Architecture
 
 #### Preprocessed data set
+
+####1. Describe how, and identify where in your code, you preprocessed the image data. What tecniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc.
+
 I have few ways to Preprocessed the data set:
 1. Turn raw images into gray Scale
 2. Normalize the image to range(0, 1)
@@ -143,7 +154,7 @@ Image below is gray scale of above images
 ![grayScale][grayScale]
 
 #### 2. Data set overview
-
+##### 2. Describe how, and identify where in your code, you set up training, validation and testing data. How much data was in each set? Explain what techniques were used to split the data into these sets. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, identify where in your code, and provide example images of the additional data)
 since the data set provided a validation data set, thus i do not use data set spliting for validation.
 
 * Number of training examples = 34799
@@ -158,6 +169,7 @@ The difference between the original data set and the augmented data set is the f
 
 
 #### 3. Model
+#### Describe, and identify where in your code, what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 I use a model simliar to AlexNet with smaller number kernel used in conv. layer and less node in hidden layer. It's because the input size is smaller wiuth this problem.
 
 ![finalGraph][finalGraph]
@@ -296,7 +308,7 @@ predict test data  0.933096
 
 
 ### Test a Model on New Images
-
+#####  Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction and identify where in your code softmax probabilities were outputted. Provide the top 5 softmax probabilities for each image along with the sign type of each probability.
 #### 1. Six new German traffic signs
 
 Here are six German traffic signs that I found on the web:
