@@ -28,11 +28,7 @@ The goals / steps of this project are the following:
 [kerasGraph]: ./img/kerasGraph.png "kerasGraph"
 [accKeras]: ./img/accKeras.png "accKeras"
 
-## Rubric Points
-###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
-
 ---
-###Writeup / README
 
 ### Data Set Summary & Exploration
 #### 1. Provide a basic summary of the data set and identify where in your code the summary was done. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
